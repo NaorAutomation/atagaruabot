@@ -4,29 +4,12 @@
         {
             "src": "main.py",
             "use": "@vercel/python"
-        },
-        {
-            "src": "static/**",
-            "use": "@vercel/static"
-        },
-        {
-            "src": "templates/**",
-            "use": "@vercel/static"
         }
     ],
     "routes": [
         {
-            "src": "/static/(.*)",
-            "dest": "/static/$1"
-        },
-        {
             "src": "/(.*)",
-            "dest": "/main.py"
+            "dest": "main.py"
         }
-    ],
-    "env": {
-        "PYTHONUNBUFFERED": "1",
-        "PYTHONPATH": ".",
-        "VERCEL": "1"
-    }
+    ]
 } 
