@@ -1,36 +1,19 @@
-import asyncio
-from fastapi import FastAPI, WebSocket, Request
+from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from bot import DiscordBot
-import os
+from fastapi.staticfiles import StaticFiles
+import discord
+import asyncio
+from bot import bot
 
-# יצירת אפליקציית FastAPI
 app = FastAPI()
-
-# הגדרת תיקיות
-templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
-# יצירת הבוט
-bot = DiscordBot()
+templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=HTMLResponse)
-async def root(request: Request):
-    """הדף הראשי"""
+async def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
-@app.get("/api/health")
-async def health_check():
-    """בדיקת תקינות"""
-    return {
-        "status": "ok",
-        "env": {
-            "VERCEL": os.getenv("VERCEL"),
-            "PORT": os.getenv("PORT")
-        }
-    }
-
-# נקודת כניסה עבור Vercel
-app.bot = bot  # שמירת הבוט כמשתנה גלובלי 
+@app.on_event("startup")
+async def startup_event():
+    asyncio.create_task(bot.start()) 
