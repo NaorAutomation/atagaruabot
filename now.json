@@ -1,0 +1,19 @@
+{
+    "version": 2,
+    "name": "discord-fifa-bot",
+    "builds": [
+        {
+            "src": "api/discord-bot.py",
+            "use": "@vercel/python"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/(.*)",
+            "dest": "/api/discord-bot.py"
+        }
+    ],
+    "env": {
+        "DISCORD_TOKEN": "@discord_token"
+    }
+} 
