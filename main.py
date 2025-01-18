@@ -4,16 +4,32 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from fastapi.requests import Request
+from fastapi.middleware.cors import CORSMiddleware
 from bot import DiscordBot
 import uvicorn
 import os
+from pathlib import Path
 
 # יצירת אפליקציית FastAPI
 app = FastAPI()
 
-# הגדרת תיקיות
-templates = Jinja2Templates(directory="templates")
-app.mount("/static", StaticFiles(directory="static"), name="static")
+# הגדרת CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# הגדרת נתיבים לתיקיות
+BASE_DIR = Path(__file__).resolve().parent
+TEMPLATES_DIR = BASE_DIR / "templates"
+STATIC_DIR = BASE_DIR / "static"
+
+# הגדרת תבניות וקבצים סטטיים
+templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 # יצירת הבוט
 bot = DiscordBot()
@@ -23,7 +39,16 @@ active_connections = []
 
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    try:
+        return templates.TemplateResponse("index.html", {"request": request})
+    except Exception as e:
+        print(f"Error rendering template: {str(e)}")
+        return HTMLResponse(content=f"Error: {str(e)}", status_code=500)
+
+@app.get("/health")
+async def health_check():
+    """נקודת קצה לבדיקת תקינות"""
+    return {"status": "healthy", "templates_dir": str(TEMPLATES_DIR), "static_dir": str(STATIC_DIR)}
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
