@@ -1,12 +1,14 @@
-from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
+from flask import Flask
 
-app = FastAPI()
+app = Flask(__name__)
 
-@app.get("/")
-async def read_root():
-    return HTMLResponse(content="<h1>שלום! האפליקציה עובדת!</h1>")
+@app.route('/')
+def home():
+    return '<h1>שלום! האפליקציה עובדת!</h1>'
 
-@app.get("/health")
-async def health_check():
-    return {"status": "ok"} 
+@app.route('/health')
+def health():
+    return {"status": "ok"}
+
+# נקודת כניסה עבור Vercel
+app.debug = True 
