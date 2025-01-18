@@ -8,11 +8,25 @@
     ],
     "routes": [
         {
+            "src": "/ws",
+            "dest": "main.py"
+        },
+        {
+            "src": "/static/(.*)",
+            "dest": "static/$1"
+        },
+        {
             "src": "/(.*)",
             "dest": "main.py"
         }
     ],
     "env": {
         "DISCORD_TOKEN": "@discord_token"
+    },
+    "functions": {
+        "api/discord-bot.py": {
+            "memory": 1024,
+            "maxDuration": 60
+        }
     }
 } 
