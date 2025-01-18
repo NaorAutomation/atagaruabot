@@ -16,4 +16,7 @@ async def read_root(request: Request):
 
 @app.on_event("startup")
 async def startup_event():
-    asyncio.create_task(bot.start()) 
+    try:
+        asyncio.create_task(bot.start())
+    except Exception as e:
+        print(f"Error starting bot: {e}") 
