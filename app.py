@@ -10,6 +10,8 @@ class DiscordBot:
     def __init__(self):
         # הגדרות הבוט
         self.DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
+        print(f"Token value: {self.DISCORD_TOKEN}")
+        print(f"Token length: {len(self.DISCORD_TOKEN) if self.DISCORD_TOKEN else 'None'}")
         self.TEXT_CHANNEL_NAME = 'fifa-20-talks'
         self.VOICE_CHANNELS = ['FIFA 22 PRO CLUB', 'FIFA 22 FUT CHAMPIONS']
         
@@ -135,6 +137,8 @@ class DiscordBot:
     async def start(self):
         try:
             print('מתחיל להריץ את הבוט...')
+            if not self.DISCORD_TOKEN:
+                raise ValueError("Token is missing! Please check your environment variables.")
             await self.bot.start(self.DISCORD_TOKEN)
         except Exception as e:
             print(f'שגיאה בהפעלת הבוט: {str(e)}')
