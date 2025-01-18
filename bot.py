@@ -237,3 +237,6 @@ class DiscordBot:
             await self.bot.start(self.DISCORD_TOKEN)
         except Exception as e:
             await self.log_message(f'שגיאה בהפעלת הבוט: {str(e)}')
+
+# יצירת אובייקט הבוט
+bot = DiscordBot()
