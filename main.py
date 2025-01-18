@@ -61,10 +61,29 @@ async def broadcast_stats(stats: dict):
 bot.broadcast_log = broadcast_log
 bot.broadcast_stats = broadcast_stats
 
-if __name__ == "__main__":
-    # הפעלת הבוט בתהליך נפרד
-    asyncio.create_task(bot.start())
-    
-    # הפעלת שרת הווב
+async def start_server():
+    """הפעלת השרת והבוט"""
+    # הפעלת הבוט
+    await bot.start()
+
+def run():
+    """פונקציית הפעלה ראשית"""
     port = int(os.getenv("PORT", 8000))
-    uvicorn.run(app, host="0.0.0.0", port=port) 
+    
+    # יצירת event loop חדש
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    
+    # הפעלת הבוט בתהליך נפרד
+    loop.create_task(start_server())
+    
+    # בדיקה אם אנחנו בסביבת פיתוח או בענן
+    host = "localhost" if os.getenv("VERCEL") is None else "0.0.0.0"
+    
+    # הפעלת השרת
+    config = uvicorn.Config(app=app, host=host, port=port, loop=loop)
+    server = uvicorn.Server(config)
+    loop.run_until_complete(server.serve())
+
+if __name__ == "__main__":
+    run() 
