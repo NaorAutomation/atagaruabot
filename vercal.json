@@ -4,17 +4,12 @@
         {
             "src": "main.py",
             "use": "@vercel/python"
-        },
-        {
-            "src": "static/**",
-            "use": "@vercel/static"
-        },
-        {
-            "src": "templates/**",
-            "use": "@vercel/static"
         }
     ],
     "routes": [
+        {
+            "handle": "filesystem"
+        },
         {
             "src": "/static/(.*)",
             "dest": "/static/$1"
@@ -24,9 +19,10 @@
             "dest": "main.py"
         }
     ],
-    "env": {
-        "VERCEL": "1",
-        "PYTHONUNBUFFERED": "1",
-        "PORT": "8000"
+    "functions": {
+        "main.py": {
+            "memory": 1024,
+            "maxDuration": 10
+        }
     }
 } 
