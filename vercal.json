@@ -20,11 +20,16 @@
             "dest": "/static/$1"
         },
         {
+            "src": "/templates/(.*)",
+            "dest": "/templates/$1"
+        },
+        {
             "src": "/(.*)",
-            "dest": "/main.py"
+            "dest": "/"
         }
     ],
     "env": {
-        "PYTHONUNBUFFERED": "1"
+        "PYTHONUNBUFFERED": "1",
+        "PYTHONPATH": "."
     }
 } 
