@@ -4,29 +4,16 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from fastapi.requests import Request
-from fastapi.middleware.cors import CORSMiddleware
 from bot import DiscordBot
 import uvicorn
-import json
 import os
-from pathlib import Path
 
 # יצירת אפליקציית FastAPI
 app = FastAPI()
 
-# הגדרת CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 # הגדרת תיקיות
-BASE_DIR = Path(__file__).resolve().parent
-templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
-app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
+templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # יצירת הבוט
 bot = DiscordBot()
@@ -74,21 +61,10 @@ async def broadcast_stats(stats: dict):
 bot.broadcast_log = broadcast_log
 bot.broadcast_stats = broadcast_stats
 
-async def start_bot():
-    """הפעלת הבוט והשרת"""
-    # הפעלת הבוט
-    await bot.start()
-
 if __name__ == "__main__":
-    # יצירת Event Loop
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    
     # הפעלת הבוט בתהליך נפרד
-    loop.create_task(start_bot())
+    asyncio.create_task(bot.start())
     
     # הפעלת שרת הווב
     port = int(os.getenv("PORT", 8000))
-    config = uvicorn.Config(app, host="localhost", port=port, loop=loop)
-    server = uvicorn.Server(config)
-    loop.run_until_complete(server.serve()) 
+    uvicorn.run(app, host="0.0.0.0", port=port) 
