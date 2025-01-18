@@ -45,7 +45,11 @@ class DiscordBot:
         }
 
         # הגדרת הבוט
-        intents = discord.Intents.all()
+        intents = discord.Intents.default()
+        intents.message_content = True
+        intents.members = True
+        intents.voice_states = True
+        intents.guilds = True
         self.bot = commands.Bot(command_prefix='!', intents=intents)
         self.setup_events()
 
@@ -137,11 +141,22 @@ class DiscordBot:
     async def start(self):
         try:
             print('מתחיל להריץ את הבוט...')
+            print('בודק הגדרות...')
             if not self.DISCORD_TOKEN:
                 raise ValueError("Token is missing! Please check your environment variables.")
-            await self.bot.start(self.DISCORD_TOKEN)
+            
+            print('מנסה להתחבר לדיסקורד...')
+            try:
+                await self.bot.start(self.DISCORD_TOKEN, reconnect=True)
+            except discord.LoginFailure as e:
+                print(f'שגיאת התחברות לדיסקורד: {str(e)}')
+                raise
+            except Exception as e:
+                print(f'שגיאה לא צפויה בהתחברות: {str(e)}')
+                raise
         except Exception as e:
             print(f'שגיאה בהפעלת הבוט: {str(e)}')
+            raise  # נזרוק את השגיאה כדי לראות את ה-stack trace המלא
 
 if __name__ == "__main__":
     bot = DiscordBot()
