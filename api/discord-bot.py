@@ -1,24 +1,49 @@
 from http.server import BaseHTTPRequestHandler
 from bot import DiscordBot
 import os
-import asyncio
+import json
 
+# יצירת אובייקט הבוט
 bot = DiscordBot()
 
-class handler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header('Content-type', 'text/plain')
-        self.end_headers()
-        self.wfile.write('Discord Bot is running!'.encode())
-        
-        # הפעלת הבוט אם הוא עדיין לא רץ
-        if not hasattr(handler, 'bot_running'):
-            handler.bot_running = True
-            asyncio.run(bot.start())
-
-    def do_POST(self):
-        self.send_response(200)
-        self.send_header('Content-type', 'text/plain')
-        self.end_headers()
-        self.wfile.write('Webhook received!'.encode()) 
+def handler(request, response):
+    """
+    פונקציית Serverless של Vercel
+    """
+    if request.method == 'GET':
+        # בדיקת חיבור
+        return {
+            'statusCode': 200,
+            'body': json.dumps({
+                'status': 'success',
+                'message': 'Discord Bot is running!'
+            })
+        }
+    
+    elif request.method == 'POST':
+        # הפעלת הבוט
+        try:
+            bot.start()
+            return {
+                'statusCode': 200,
+                'body': json.dumps({
+                    'status': 'success',
+                    'message': 'Bot started successfully!'
+                })
+            }
+        except Exception as e:
+            return {
+                'statusCode': 500,
+                'body': json.dumps({
+                    'status': 'error',
+                    'message': str(e)
+                })
+            }
+    
+    return {
+        'statusCode': 405,
+        'body': json.dumps({
+            'status': 'error',
+            'message': 'Method not allowed'
+        })
+    } 
