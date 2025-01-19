@@ -9,9 +9,14 @@ from typing import Optional
 class DiscordBot:
     def __init__(self):
         # הגדרות הבוט
-        self.DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
-        print(f"Token value: {self.DISCORD_TOKEN}")
+        token = os.getenv('DISCORD_TOKEN', '')
+        # ניקוי הטוקן מתווים מיוחדים
+        self.DISCORD_TOKEN = token.strip()  # מסיר רווחים וירידות שורה
+        print("=== Token Debug Info ===")
+        print(f"Raw token value: '{self.DISCORD_TOKEN}'")
         print(f"Token length: {len(self.DISCORD_TOKEN) if self.DISCORD_TOKEN else 'None'}")
+        print(f"Token characters (ASCII): {[ord(c) for c in self.DISCORD_TOKEN]} if self.DISCORD_TOKEN else []")
+        print("=====================")
         self.TEXT_CHANNEL_NAME = 'fifa-20-talks'
         self.VOICE_CHANNELS = ['FIFA 22 PRO CLUB', 'FIFA 22 FUT CHAMPIONS']
         
